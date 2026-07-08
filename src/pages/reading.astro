@@ -1,0 +1,65 @@
+---
+import Base from "../layouts/Shell.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import { getCollection } from "astro:content";
+
+const entries = (await getCollection("reading")).sort((a, b) => {
+  const da = a.data.dateRead?.getTime() ?? 0;
+  const db = b.data.dateRead?.getTime() ?? 0;
+  return db - da;
+});
+
+// Group by the year the paper was read; undated entries go last.
+const groups = new Map<string, typeof entries>();
+for (const e of entries) {
+  const key = e.data.dateRead ? String(e.data.dateRead.getFullYear()) : "Undated";
+  if (!groups.has(key)) groups.set(key, []);
+  groups.get(key)!.push(e);
+}
+---
+<Base title="Papers I recommend" description="Papers I've liked enough to recommend, with a one-line takeaway on each.">
+  <SectionHeading eyebrow="Reading list" title="Papers I recommend" />
+
+  <p class="mb-10 max-w-3xl text-zinc-600 dark:text-zinc-400">
+    Papers I've liked enough to pass on — each with a one-line note on why it's
+    worth your time.
+  </p>
+
+  <div class="max-w-3xl space-y-12">
+    {[...groups.entries()].map(([year, items]) => (
+      <section>
+        <h2 class="mb-2 font-mono text-sm font-medium text-accent dark:text-accent-soft">
+          {year}
+          <span class="ml-2 text-xs text-zinc-400 dark:text-zinc-500">({items.length})</span>
+        </h2>
+        <div class="divide-y divide-zinc-200/70 dark:divide-zinc-800">
+          {items.map((e) => (
+            <article class="row-hover py-5">
+              <div class="flex items-baseline justify-between gap-4">
+                <h3 class="font-display text-base font-medium leading-snug">
+                  {e.data.url ? (
+                    <a href={e.data.url} target="_blank" rel="noopener noreferrer" class="link-underline">{e.data.title}</a>
+                  ) : e.data.title}
+                </h3>
+                {e.data.year && <span class="shrink-0 font-mono text-sm text-zinc-400">{e.data.year}</span>}
+              </div>
+              {(e.data.authors || e.data.venue) && (
+                <p class="mt-1 text-sm text-zinc-500">
+                  {[e.data.authors, e.data.venue].filter(Boolean).join(" · ")}
+                </p>
+              )}
+              {e.data.note && <p class="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">{e.data.note}</p>}
+              {e.data.tags.length > 0 && (
+                <ul class="mt-2 flex flex-wrap gap-1.5">
+                  {e.data.tags.map((t) => (
+                    <li class="rounded bg-zinc-100 px-2 py-0.5 font-mono text-xs text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">{t}</li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</Base>

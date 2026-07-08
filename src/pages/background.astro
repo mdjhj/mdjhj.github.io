@@ -1,0 +1,164 @@
+---
+import Base from "../layouts/Shell.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import Icon from "../components/Icon.astro";
+import { site, teaching, education, testScores } from "../data/site";
+
+const tabs = [
+  { id: "teaching", label: "Teaching" },
+  { id: "education", label: "Education" },
+  { id: "scores", label: "Test scores" },
+];
+---
+<Base title="Background" description="Teaching experience, education, and test scores.">
+  <SectionHeading eyebrow="Experience & credentials" title="Background" />
+
+  <div class="max-w-3xl">
+    <!-- Tab bar -->
+    <div
+      role="tablist"
+      aria-label="Background sections"
+      class="mb-8 flex gap-6 border-b border-zinc-200/70 dark:border-zinc-800"
+    >
+      {tabs.map((t, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`tab-${t.id}`}
+          aria-controls={`panel-${t.id}`}
+          aria-selected={i === 0 ? "true" : "false"}
+          tabindex={i === 0 ? 0 : -1}
+          data-hash={t.id}
+          class="-mb-px border-b-2 border-transparent px-0.5 pb-2.5 text-sm font-medium text-zinc-500 transition-colors hover:text-ink aria-selected:border-accent aria-selected:text-accent dark:text-zinc-400 dark:hover:text-zinc-100 dark:aria-selected:border-accent-soft dark:aria-selected:text-accent-soft"
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Teaching -->
+    <section id="panel-teaching" role="tabpanel" aria-labelledby="tab-teaching">
+      <p class="mb-10 leading-relaxed text-zinc-700 dark:text-zinc-300">
+        I have taught across the computer science curriculum at two universities — from
+        core theory to systems courses — and supervise undergraduate thesis and project
+        teams, mostly in applied deep learning.
+      </p>
+
+      <div class="space-y-12">
+        {teaching.map((t) => (
+          <section>
+            <div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+              <h2 class="font-display text-xl font-medium leading-snug">{t.institution}</h2>
+              <span class="shrink-0 font-mono text-xs text-zinc-400 dark:text-zinc-500">{t.period}</span>
+            </div>
+            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{t.role}</p>
+
+            <h3 class="mb-2 mt-5 font-mono text-xs uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500">
+              Courses
+            </h3>
+            <ul class="flex flex-wrap gap-2">
+              {t.courses.map((c) => (
+                <li class="rounded-full border border-zinc-200 px-3 py-1 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+                  {c}
+                </li>
+              ))}
+            </ul>
+
+            {t.highlights.length > 0 && (
+              <>
+                <h3 class="mb-2 mt-5 font-mono text-xs uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500">
+                  Supervision & mentoring
+                </h3>
+                <ul class="space-y-1.5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                  {t.highlights.map((h) => (
+                    <li class="flex gap-2.5">
+                      <span class="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-accent/60 dark:bg-accent-soft/60"></span>
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
+        ))}
+      </div>
+
+      <p class="mt-12 flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+        <Icon name="scholar" class="h-4 w-4 shrink-0" />
+        Interested in a thesis or project under my supervision? <a href={`mailto:${site.links.email}`} class="link-underline">Email me</a>.
+      </p>
+    </section>
+
+    <!-- Education -->
+    <section id="panel-education" role="tabpanel" aria-labelledby="tab-education" hidden>
+      <div class="space-y-10">
+        {education.map((e) => (
+          <div>
+            <div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+              <h2 class="font-display text-xl font-medium leading-snug">{e.school}</h2>
+              <span class="shrink-0 font-mono text-xs text-zinc-400 dark:text-zinc-500">{e.period}</span>
+            </div>
+            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{e.degree} · {e.location}</p>
+            <ul class="mt-4 space-y-1.5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+              {e.details.map((d) => (
+                <li class="flex gap-2.5">
+                  <span class="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-accent/60 dark:bg-accent-soft/60"></span>
+                  {d}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Test scores -->
+    <section id="panel-scores" role="tabpanel" aria-labelledby="tab-scores" hidden>
+      <ul class="grid gap-4 sm:grid-cols-2">
+        {testScores.map((t) => (
+          <li class="card card-hover px-5 py-4">
+            <div class="flex items-baseline justify-between gap-3">
+              <span class="font-display text-base font-medium">{t.name}</span>
+              <span class="font-display text-2xl font-semibold text-accent dark:text-accent-soft">{t.score}</span>
+            </div>
+            <p class="mt-1.5 text-sm text-zinc-600 dark:text-zinc-400">{t.detail}</p>
+            <p class="mt-1 font-mono text-xs text-zinc-400 dark:text-zinc-500">{t.date}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+      if (tabs.length === 0) return;
+
+      const activate = (tab, updateHash = true) => {
+        for (const t of tabs) {
+          const selected = t === tab;
+          t.setAttribute("aria-selected", String(selected));
+          t.tabIndex = selected ? 0 : -1;
+          const panel = document.getElementById(t.getAttribute("aria-controls"));
+          if (panel) panel.hidden = !selected;
+        }
+        if (updateHash) history.replaceState(null, "", "#" + tab.dataset.hash);
+      };
+
+      tabs.forEach((tab, i) => {
+        tab.addEventListener("click", () => activate(tab));
+        tab.addEventListener("keydown", (e) => {
+          if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+          e.preventDefault();
+          const next = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+          next.focus();
+          activate(next);
+        });
+      });
+
+      // Deep links: /background#education or /background#scores open that tab.
+      const initial = tabs.find((t) => "#" + t.dataset.hash === location.hash);
+      if (initial) activate(initial, false);
+    })();
+  </script>
+</Base>

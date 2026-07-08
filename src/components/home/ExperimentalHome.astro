@@ -1,0 +1,335 @@
+---
+// EXPERIMENTAL home layout: asymmetrical split-screen — the portrait anchors
+// a full-height left column (sticky on desktop), and everything else flows
+// as a bento grid in the right column. Nav lives in BaseAlt's right sidebar.
+import BaseAlt from "../../layouts/BaseAlt.astro";
+import SocialLinks from "../SocialLinks.astro";
+import Icon from "../Icon.astro";
+import SceneStrip from "../SceneStrip.astro";
+import { Image } from "astro:assets";
+import {
+  site,
+  news,
+  researchInterests,
+  education,
+  testScores,
+  experience,
+  skills,
+  quotes,
+} from "../../data/site";
+import { getCollection } from "astro:content";
+
+const base = import.meta.env.BASE_URL;
+
+// Prefer the tall original portrait for the full-height column; fall back to
+// the square crop, or no image at all.
+const tall = import.meta.glob<{ default: ImageMetadata }>(
+  "../../assets/profile-original.{jpg,jpeg,png,webp}",
+  { eager: true },
+);
+const square = import.meta.glob<{ default: ImageMetadata }>(
+  "../../assets/profile.{jpg,jpeg,png,webp}",
+  { eager: true },
+);
+const portrait = Object.values(tall)[0]?.default ?? Object.values(square)[0]?.default;
+
+// Wide pre-cropped band (profile-banner.jpg) for the mobile banner, so the
+// scene stays un-zoomed at banner height. Falls back to the portrait.
+const banners = import.meta.glob<{ default: ImageMetadata }>(
+  "../../assets/profile-banner.{jpg,jpeg,png,webp}",
+  { eager: true },
+);
+const banner = Object.values(banners)[0]?.default ?? portrait;
+
+const featured = (await getCollection("publications"))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => b.data.year - a.data.year)
+  .slice(0, 3);
+
+// Contact rows shown under the portrait (desktop): icon + handle/username.
+const L = site.links;
+const contact = [
+  L.email && { icon: "mail", label: L.email, href: `mailto:${L.email}` },
+  L.scholar && { icon: "scholar", label: "Google Scholar", href: L.scholar },
+  L.orcid && {
+    icon: "orcid",
+    label: L.orcid.split("/").filter(Boolean).pop(),
+    href: L.orcid,
+  },
+  L.github && {
+    icon: "github",
+    label: `@${L.github.split("/").filter(Boolean).pop()}`,
+    href: L.github,
+  },
+  L.linkedin && {
+    icon: "linkedin",
+    label: `in/${L.linkedin.split("/in/")[1]?.replace(/\/+$/, "") ?? "linkedin"}`,
+    href: L.linkedin,
+  },
+].filter(Boolean) as { icon: string; label: string; href: string }[];
+
+const quote = quotes[0];
+
+// Shared bento-card header.
+const label = "mb-2.5 flex items-center gap-2";
+const labelText = "font-mono text-xs uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500";
+const labelIcon = "h-4 w-4 text-accent dark:text-accent-soft";
+---
+
+<BaseAlt>
+  <div class="flex flex-col lg:flex-row">
+    <!-- Left: portrait column, sticky full-height on desktop -->
+    {portrait && (
+      <div class="relative shrink-0 lg:sticky lg:top-0 lg:w-[30%] lg:self-start lg:p-5 xl:w-[27%] xl:p-6">
+        <!-- Mobile banner: wide pre-cropped band, un-zoomed at banner height. -->
+        <Image
+          src={banner}
+          alt={`Portrait of ${site.name}`}
+          widths={[640, 960, 1280, 1600]}
+          sizes="100vw"
+          loading="eager"
+          class="fade-in-scale h-72 w-full object-cover object-[50%_45%] sm:h-80 lg:hidden"
+        />
+        <!-- Desktop: framed portrait -->
+        <Image
+          src={portrait}
+          alt={`Portrait of ${site.name}`}
+          widths={[480, 768, 1080]}
+          sizes="30vw"
+          loading="eager"
+          class="fade-in-scale hidden w-full object-cover object-[50%_32%] lg:block lg:h-[23rem] lg:rounded-2xl lg:shadow-sm lg:ring-1 lg:ring-zinc-200 xl:h-[25rem] dark:lg:ring-zinc-800"
+        />
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-paper/70 to-transparent lg:hidden dark:from-ink/70" aria-hidden="true"></div>
+
+        <!-- Contact — fills the space under the portrait on desktop -->
+        <ul class="mt-5 hidden space-y-2.5 px-1 lg:block">
+          {contact.map((c) => (
+            <li>
+              <a
+                href={c.href}
+                target={c.href.startsWith("mailto:") ? undefined : "_blank"}
+                rel="noopener noreferrer"
+                class="group flex items-center gap-2.5 text-sm text-zinc-600 transition-colors hover:text-accent dark:text-zinc-400 dark:hover:text-accent-soft"
+              >
+                <Icon name={c.icon} class="h-4 w-4 shrink-0 text-zinc-400 transition-colors group-hover:text-accent dark:text-zinc-500 dark:group-hover:text-accent-soft" />
+                <span class="truncate font-mono text-[13px]">{c.label}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <!-- Right: intro + bento content -->
+    <div class="min-w-0 flex-1 px-6 py-10 sm:px-10 lg:py-14">
+      <!-- Intro -->
+      <section id="about" class="max-w-2xl scroll-mt-8">
+        <p class="fade-up mb-4 font-mono text-xs uppercase tracking-[0.2em] text-accent dark:text-accent-soft" style="--stagger: 0">
+          {site.role}
+        </p>
+        <h1 class="fade-up font-display text-4xl font-semibold leading-[1.08] tracking-tight xl:text-5xl" style="--stagger: 1">
+          {site.name}
+        </h1>
+        <p class="fade-up mt-5 text-lg leading-relaxed text-zinc-600 dark:text-zinc-300" style="--stagger: 2">
+          {site.tagline}
+        </p>
+        <ul class="fade-up mt-5 space-y-1.5 text-sm text-zinc-500 dark:text-zinc-400" style="--stagger: 3">
+          <li class="flex items-center gap-2">
+            <Icon name="briefcase" class="h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500" />
+            {site.affiliation}
+          </li>
+          <li class="flex items-center gap-2">
+            <Icon name="map-pin" class="h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500" />
+            {site.location}
+          </li>
+        </ul>
+        {site.availability && (
+          <p class="fade-up mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/5 px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400" style="--stagger: 4">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+            {site.availability}
+          </p>
+        )}
+        <div class="fade-up mt-7 flex flex-wrap items-center gap-3" style="--stagger: 5">
+          <a
+            href="#contact"
+            class="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-ink"
+          >
+            <Icon name="mail" class="h-4 w-4" />
+            Get in touch
+          </a>
+          <a
+            href={`${base}cv.pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-accent/50 hover:text-accent dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-accent-soft/50 dark:hover:text-accent-soft"
+          >
+            <Icon name="file-text" class="h-4 w-4" />
+            View CV
+          </a>
+          <!-- Socials show here on mobile; on desktop they live under the portrait. -->
+          <div class="lg:hidden">
+            <SocialLinks />
+          </div>
+        </div>
+      </section>
+
+      <!-- Decorative mountain/wave strip (shared with the standard layout) -->
+      <SceneStrip class="mt-8 max-w-2xl" />
+
+      <!-- Bento grid -->
+      <div class="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <!-- About -->
+        <div class="card p-5 sm:col-span-2">
+          <div class={label}>
+            <Icon name="message" class={labelIcon} />
+            <span class={labelText}>About</span>
+          </div>
+          <div class="space-y-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {site.bio.map((p) => <p>{p}</p>)}
+          </div>
+        </div>
+
+        <!-- Interests -->
+        <div class="card card-hover p-5">
+          <div class={label}>
+            <Icon name="sparkles" class={labelIcon} />
+            <span class={labelText}>Research interests</span>
+          </div>
+          <ul class="flex flex-wrap gap-1.5">
+            {researchInterests.map((t) => (
+              <li class="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 px-2.5 py-1 text-xs text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
+                <Icon name={t.icon} class="h-3 w-3 text-accent dark:text-accent-soft" />
+                {t.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- News -->
+        <div id="news" class="card scroll-mt-8 p-5 sm:col-span-2">
+          <div class={label}>
+            <Icon name="activity" class={labelIcon} />
+            <span class={labelText}>News</span>
+          </div>
+          <ul class="space-y-2.5">
+            {news.map((n) => (
+              <li class="flex gap-3">
+                <span class="w-20 shrink-0 pt-0.5 font-mono text-xs text-zinc-400 dark:text-zinc-500">[{n.date}]</span>
+                <span class="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">{n.text}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Current position -->
+        <div id="background" class="card card-hover scroll-mt-8 p-5">
+          <div class={label}>
+            <Icon name="briefcase" class={labelIcon} />
+            <span class={labelText}>Current position</span>
+          </div>
+          <p class="font-display text-lg font-medium leading-snug">{experience[0].role}</p>
+          <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{experience[0].org}</p>
+          <p class="mt-2 font-mono text-xs text-zinc-400 dark:text-zinc-500">{experience[0].period}</p>
+        </div>
+
+        <!-- Education -->
+        <div class="card card-hover p-5">
+          <div class={label}>
+            <Icon name="scholar" class={labelIcon} />
+            <span class={labelText}>Education</span>
+          </div>
+          <p class="font-display text-lg font-medium leading-snug">{education[0].degree}</p>
+          <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{education[0].school} · {education[0].summary}</p>
+          <p class="mt-2 font-mono text-xs text-zinc-400 dark:text-zinc-500">{education[0].period}</p>
+        </div>
+
+        <!-- Test scores -->
+        {testScores.map((t) => (
+          <div class="card card-hover p-5">
+            <div class={label}>
+              <Icon name="file-text" class={labelIcon} />
+              <span class={labelText}>{t.name}</span>
+            </div>
+            <p class="font-display text-2xl font-semibold text-accent dark:text-accent-soft">{t.score}</p>
+            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.detail}</p>
+            <p class="mt-2 font-mono text-xs text-zinc-400 dark:text-zinc-500">{t.date}</p>
+          </div>
+        ))}
+
+        <!-- Quote / Life teaser -->
+        <div class="card p-5">
+          <div class={label}>
+            <Icon name="eye" class={labelIcon} />
+            <span class={labelText}>Beyond academia</span>
+          </div>
+          {quote && (
+            <blockquote class="border-l-2 border-accent/50 pl-3 dark:border-accent-soft/50">
+              <p class="font-display text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">“{quote.text}”</p>
+              <footer class="mt-1.5 font-mono text-[11px] text-zinc-400 dark:text-zinc-500">— {quote.source}</footer>
+            </blockquote>
+          )}
+          <a href={`${base}life`} class="link-underline mt-3 inline-block text-sm">More →</a>
+        </div>
+
+        <!-- Selected work -->
+        <div id="work" class="card scroll-mt-8 p-5 sm:col-span-2 xl:col-span-3">
+          <div class="mb-3 flex items-baseline justify-between gap-4">
+            <div class={label}>
+              <Icon name="layers" class={labelIcon} />
+              <span class={labelText}>Selected work</span>
+            </div>
+            <a href={`${base}publications`} class="link-underline shrink-0 text-sm">All publications →</a>
+          </div>
+          <ul class="grid gap-4 xl:grid-cols-3">
+            {featured.map((p) => (
+              <li class="border-l-2 border-zinc-200 pl-3.5 dark:border-zinc-700">
+                <p class="font-display text-sm font-medium leading-snug">{p.data.title}</p>
+                <p class="mt-1.5 font-mono text-xs text-zinc-400 dark:text-zinc-500">{p.data.venue.split("(").pop()?.replace(")", "") ?? p.data.venue} · {p.data.year}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Skills -->
+        <div id="skills" class="card scroll-mt-8 p-5 sm:col-span-2 xl:col-span-3">
+          <div class={label}>
+            <Icon name="shield" class={labelIcon} />
+            <span class={labelText}>Skills</span>
+          </div>
+          <div class="space-y-3">
+            {skills.map((g) => (
+              <div class="flex flex-col gap-1.5 sm:flex-row sm:items-baseline">
+                <h3 class="w-44 shrink-0 font-mono text-xs uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500">{g.group}</h3>
+                <ul class="flex flex-wrap gap-1.5">
+                  {g.items.map((s) => (
+                    <li class="rounded bg-zinc-100 px-2 py-0.5 font-mono text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">{s}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div id="contact" class="card scroll-mt-8 p-8 text-center sm:col-span-2 xl:col-span-3">
+          <p class="mb-2 font-mono text-sm text-accent dark:text-accent-soft">what's next?</p>
+          <h2 class="font-display text-2xl font-semibold tracking-tight">Get in touch</h2>
+          <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            Research collaboration, PhD opportunities, or just a question about my work —
+            my inbox is always open.
+          </p>
+          <a
+            href={`mailto:${site.links.email}`}
+            class="mt-6 inline-flex items-center gap-2.5 rounded-lg border border-accent px-5 py-2.5 font-mono text-sm text-accent transition-colors hover:bg-accent/5 dark:border-accent-soft dark:text-accent-soft dark:hover:bg-accent-soft/10"
+          >
+            <Icon name="mail" class="h-4 w-4" />
+            {site.links.email}
+          </a>
+          <div class="mt-6 flex justify-center">
+            <SocialLinks />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseAlt>

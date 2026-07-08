@@ -1,0 +1,185 @@
+---
+// ALTERNATIVE layout shell: no top navbar — a fixed vertical sidebar on the
+// RIGHT (desktop) with the site's page tabs, collapsing into a hamburger
+// overlay on mobile. Set `contained` to wrap the slot in the standard
+// centered reading container (used by the tab pages via Shell.astro).
+import "../styles/global.css";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import { site } from "../data/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  contained?: boolean;
+}
+
+const { title, description, contained = false } = Astro.props;
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
+const pageDesc = description ?? site.tagline;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const base = import.meta.env.BASE_URL;
+const current = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+function href(path: string, external?: boolean) {
+  if (external) return path.startsWith("/") ? `${base}${path.slice(1)}` : path;
+  const clean = path === "/" ? "" : path.replace(/^\//, "");
+  return `${base}${clean}`;
+}
+
+function isActive(path: string) {
+  const target = href(path).replace(/\/$/, "") || "/";
+  return current === target;
+}
+
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafaf9" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#16181d" />
+    <link rel="sitemap" href={`${base}sitemap-index.xml`} />
+    <link rel="canonical" href={canonical} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDesc} />
+    <meta name="author" content={site.name} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- Set theme before paint to avoid a flash. -->
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (stored === "dark" || (!stored && prefersDark)) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
+  </head>
+
+  <body class="min-h-screen">
+    <!-- Desktop: fixed vertical sidebar on the right -->
+    <aside class="fixed inset-y-0 right-0 z-40 hidden w-44 flex-col items-end justify-between border-l border-zinc-200/70 bg-paper/90 px-6 py-8 backdrop-blur lg:flex dark:border-zinc-800 dark:bg-ink/90">
+      <a
+        href={href("/")}
+        class="font-mono text-[15px] font-semibold tracking-tight text-ink transition-colors [writing-mode:vertical-rl] hover:text-accent dark:text-zinc-100 dark:hover:text-accent-soft"
+        aria-label={site.name}
+      >
+        {site.brand[0]}<span class="text-accent dark:text-accent-soft">.</span>{site.brand[1]}
+      </a>
+
+      <nav class="flex flex-col items-end gap-3" aria-label="Site">
+        {site.nav.map((item) => (
+          <a
+            href={href(item.href, item.external)}
+            target={item.external ? "_blank" : undefined}
+            rel={item.external ? "noopener noreferrer" : undefined}
+            class:list={[
+              "group flex items-center justify-end gap-2 text-sm font-medium transition-[transform,color] duration-200 hover:-translate-x-1",
+              isActive(item.href)
+                ? "text-accent dark:text-accent-soft"
+                : "text-zinc-600 hover:text-accent dark:text-zinc-400 dark:hover:text-accent-soft",
+            ]}
+          >
+            {item.label}
+            <span
+              class:list={[
+                "h-px bg-accent transition-all duration-200 dark:bg-accent-soft",
+                isActive(item.href) ? "w-3" : "w-0 group-hover:w-3",
+              ]}
+              aria-hidden="true"
+            ></span>
+          </a>
+        ))}
+      </nav>
+
+      <ThemeToggle />
+    </aside>
+
+    <!-- Mobile: hamburger button + full-screen overlay menu -->
+    <button
+      id="alt-menu-btn"
+      type="button"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+      class="group fixed right-4 top-4 z-50 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-300 bg-paper/90 text-zinc-700 backdrop-blur lg:hidden dark:border-zinc-700 dark:bg-ink/90 dark:text-zinc-300"
+    >
+      <svg class="block h-5 w-5 group-aria-expanded:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+        <path d="M4 6h16" /><path d="M4 12h16" /><path d="M4 18h16" />
+      </svg>
+      <svg class="hidden h-5 w-5 group-aria-expanded:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+        <path d="m6 6 12 12" /><path d="m18 6-12 12" />
+      </svg>
+    </button>
+
+    <div
+      id="alt-menu"
+      class="fixed inset-0 z-40 hidden flex-col items-end gap-6 bg-paper/95 px-8 pt-24 backdrop-blur lg:hidden dark:bg-ink/95"
+    >
+      {site.nav.map((item) => (
+        <a
+          href={href(item.href, item.external)}
+          target={item.external ? "_blank" : undefined}
+          rel={item.external ? "noopener noreferrer" : undefined}
+          class:list={[
+            "font-display text-2xl font-medium transition-colors",
+            isActive(item.href)
+              ? "text-accent dark:text-accent-soft"
+              : "text-zinc-700 hover:text-accent dark:text-zinc-300 dark:hover:text-accent-soft",
+          ]}
+        >
+          {item.label}
+        </a>
+      ))}
+      <div class="mt-4 flex items-center gap-4">
+        <SocialLinks />
+        <ThemeToggle />
+      </div>
+    </div>
+
+    <!-- Content, clear of the sidebar on desktop -->
+    <main class="lg:mr-44">
+      {contained ? (
+        <div class="mx-auto w-full max-w-content px-6 py-12 md:px-8 md:py-16">
+          <slot />
+        </div>
+      ) : (
+        <slot />
+      )}
+      <footer class="mx-auto max-w-content px-6 pb-8 pt-4 md:px-8">
+        <p class="text-xs text-zinc-400 dark:text-zinc-600">
+          © {year} {site.name}. Built with Astro.
+        </p>
+      </footer>
+    </main>
+
+    <script is:inline>
+      (() => {
+        const btn = document.getElementById("alt-menu-btn");
+        const menu = document.getElementById("alt-menu");
+        if (!btn || !menu) return;
+        const setOpen = (open) => {
+          btn.setAttribute("aria-expanded", String(open));
+          menu.classList.toggle("hidden", !open);
+          menu.classList.toggle("flex", open);
+          document.body.classList.toggle("overflow-hidden", open);
+        };
+        btn.addEventListener("click", () => setOpen(btn.getAttribute("aria-expanded") !== "true"));
+        menu.addEventListener("click", (e) => {
+          if (e.target instanceof Element && e.target.closest("a")) setOpen(false);
+        });
+      })();
+    </script>
+  </body>
+</html>

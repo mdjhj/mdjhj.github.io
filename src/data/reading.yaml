@@ -1,0 +1,36 @@
+# ---------------------------------------------------------------------------
+# Papers I recommend — one block per paper, newest-read first (order here
+# doesn't matter; the page sorts by dateRead and groups by year).
+#
+# To add a paper, copy this template and fill it in:
+#
+# - id: short-unique-slug
+#   title: "Paper Title"
+#   authors: "First Author et al."
+#   venue: NeurIPS            # optional
+#   year: 2024                # optional — the paper's publication year
+#   url: https://arxiv.org/abs/...   # optional
+#   tags: [topic-one, topic-two]     # optional
+#   note: "One line on why this paper is worth reading."
+#   dateRead: 2026-07-01      # when you read it — drives year grouping
+# ---------------------------------------------------------------------------
+
+- id: vit
+  title: "An Image Is Worth 16x16 Words: Transformers for Image Recognition at Scale"
+  authors: "Dosovitskiy et al."
+  venue: ICLR
+  year: 2021
+  url: https://arxiv.org/abs/2010.11929
+  tags: [vision, transformers]
+  note: "ViT — directly relevant to my work on vision models; useful baseline framing."
+  dateRead: 2025-02-02
+
+- id: attention-is-all-you-need
+  title: "Attention Is All You Need"
+  authors: "Vaswani et al."
+  venue: NeurIPS
+  year: 2017
+  url: https://arxiv.org/abs/1706.03762
+  tags: [transformers, foundations]
+  note: "The architecture underneath most of modern vision and language work."
+  dateRead: 2025-01-15

@@ -1,0 +1,10 @@
+---
+// Root switcher — set `layoutVariant` in src/data/site.ts to "experimental"
+// to serve the alternative layout at the root. Both layouts live untouched in
+// src/components/home/.
+import StandardHome from "../components/home/StandardHome.astro";
+import ExperimentalHome from "../components/home/ExperimentalHome.astro";
+import { layoutVariant } from "../data/site";
+---
+
+{layoutVariant === "experimental" ? <ExperimentalHome /> : <StandardHome />}

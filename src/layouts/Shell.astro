@@ -1,0 +1,26 @@
+---
+// Variant-aware page shell: tab pages (Research, Publications, Background,
+// Reading, Life, 404) render inside whichever chrome matches `layoutVariant`
+// in src/data/site.ts — top navbar (Base) or right sidebar (BaseAlt).
+import Base from "./Base.astro";
+import BaseAlt from "./BaseAlt.astro";
+import { layoutVariant } from "../data/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description } = Astro.props;
+---
+
+{
+  layoutVariant === "experimental" ? (
+    <BaseAlt title={title} description={description} contained>
+      <slot />
+    </BaseAlt>
+  ) : (
+    <Base title={title} description={description}>
+      <slot />
+    </Base>
+  )
+}

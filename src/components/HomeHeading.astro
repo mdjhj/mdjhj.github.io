@@ -1,0 +1,17 @@
+---
+// Section heading for the one-page home layout: title, a hairline rule
+// stretching to the right, and an optional trailing link.
+interface Props {
+  title: string;
+  href?: string;
+  linkLabel?: string;
+}
+const { title, href, linkLabel } = Astro.props;
+---
+<div class="mb-6 flex items-center gap-4">
+  <h2 class="shrink-0 font-display text-2xl font-semibold tracking-tight">{title}</h2>
+  <span class="h-px min-w-8 flex-1 bg-zinc-200 dark:bg-zinc-800" aria-hidden="true"></span>
+  {href && linkLabel && (
+    <a href={href} class="link-underline shrink-0 text-sm">{linkLabel} →</a>
+  )}
+</div>

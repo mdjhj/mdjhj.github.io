@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Shell.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import PublicationCard from "../components/PublicationCard.astro";
+import { getCollection } from "astro:content";
+
+const pubs = (await getCollection("publications")).sort((a, b) => {
+  if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
+  return b.data.year - a.data.year;
+});
+---
+<Base title="Publications" description="Papers and manuscripts.">
+  <SectionHeading eyebrow="Papers & manuscripts" title="Publications" />
+  <div class="max-w-3xl">
+    {pubs.length === 0 ? (
+      <p class="text-zinc-500">No publications yet.</p>
+    ) : (
+      pubs.map((p) => <PublicationCard {...p.data} />)
+    )}
+  </div>
+</Base>

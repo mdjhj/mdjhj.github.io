@@ -1,0 +1,56 @@
+---
+import { site } from "../data/site";
+import Icon from "./Icon.astro";
+
+interface Props {
+  // "labels" shows icon + text; "icons" shows icon-only buttons.
+  variant?: "labels" | "icons";
+}
+const { variant = "icons" } = Astro.props;
+
+const L = site.links;
+const items = [
+  L.email    ? { label: "Email",    icon: "mail",     href: `mailto:${L.email}` } : null,
+  L.scholar  ? { label: "Scholar",  icon: "scholar",  href: L.scholar }           : null,
+  L.orcid    ? { label: "ORCID",    icon: "orcid",    href: L.orcid }             : null,
+  L.github   ? { label: "GitHub",   icon: "github",   href: L.github }            : null,
+  L.linkedin ? { label: "LinkedIn", icon: "linkedin", href: L.linkedin }          : null,
+].filter(Boolean) as { label: string; icon: string; href: string }[];
+---
+
+{
+  variant === "labels" ? (
+    <ul class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+      {items.map((it) => (
+        <li>
+          <a
+            href={it.href}
+            target={it.href.startsWith("mailto:") ? undefined : "_blank"}
+            rel="noopener noreferrer"
+            class="group inline-flex items-center gap-1.5 text-zinc-600 transition-colors hover:text-accent dark:text-zinc-400 dark:hover:text-accent-soft"
+          >
+            <Icon name={it.icon} class="h-4 w-4" />
+            <span class="link-underline text-current">{it.label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <ul class="flex items-center gap-2">
+      {items.map((it) => (
+        <li>
+          <a
+            href={it.href}
+            target={it.href.startsWith("mailto:") ? undefined : "_blank"}
+            rel="noopener noreferrer"
+            aria-label={it.label}
+            title={it.label}
+            class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 transition-colors hover:border-accent/40 hover:text-accent dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-accent-soft/40 dark:hover:text-accent-soft"
+          >
+            <Icon name={it.icon} class="h-[18px] w-[18px]" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}

@@ -1,0 +1,254 @@
+---
+// STANDARD home layout: top navbar, centered reading column.
+// The root page (src/pages/index.astro) picks between this and
+// ExperimentalHome.astro via `layoutVariant` in src/data/site.ts.
+import Base from "../../layouts/Base.astro";
+import SocialLinks from "../SocialLinks.astro";
+import PublicationCard from "../PublicationCard.astro";
+import HomeHeading from "../HomeHeading.astro";
+import Icon from "../Icon.astro";
+import SceneStrip from "../SceneStrip.astro";
+import { Image } from "astro:assets";
+import {
+  site,
+  news,
+  researchInterests,
+  education,
+  testScores,
+  experience,
+  skills,
+} from "../../data/site";
+import { getCollection } from "astro:content";
+
+const base = import.meta.env.BASE_URL;
+
+// Portrait is optional: drop an image at src/assets/profile.{jpg,png,webp}
+// and it appears; delete it and the hero reflows without it.
+const portraits = import.meta.glob<{ default: ImageMetadata }>(
+  "../../assets/profile.{jpg,jpeg,png,webp}",
+  { eager: true },
+);
+const portrait = Object.values(portraits)[0]?.default;
+
+const featured = (await getCollection("publications"))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => b.data.year - a.data.year);
+---
+
+<Base>
+  <!-- Hero -->
+  <section class="mb-16 md:mb-20">
+    <div class="flex flex-col-reverse items-start gap-8 md:flex-row md:items-center md:justify-between md:gap-12">
+      <div class="max-w-2xl">
+        <p class="fade-up mb-4 font-mono text-xs uppercase tracking-[0.2em] text-accent dark:text-accent-soft" style="--stagger: 0">
+          {site.role}
+        </p>
+        <h1 class="fade-up font-display text-4xl font-semibold leading-[1.08] tracking-tight md:text-5xl" style="--stagger: 1">
+          {site.name}
+        </h1>
+        <p class="fade-up mt-5 text-lg leading-relaxed text-zinc-600 dark:text-zinc-300" style="--stagger: 2">
+          {site.tagline}
+        </p>
+
+        <ul class="fade-up mt-6 space-y-1.5 text-sm text-zinc-500 dark:text-zinc-400" style="--stagger: 3">
+          <li class="flex items-center gap-2">
+            <Icon name="briefcase" class="h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500" />
+            {site.affiliation}
+          </li>
+          <li class="flex items-center gap-2">
+            <Icon name="map-pin" class="h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500" />
+            {site.location}
+          </li>
+          <li class="flex items-center gap-2">
+            <Icon name="scholar" class="h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500" />
+            {site.incoming}
+          </li>
+        </ul>
+
+        {site.availability && (
+          <p class="fade-up mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/5 px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400" style="--stagger: 4">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+            {site.availability}
+          </p>
+        )}
+
+        <div class="fade-up mt-8 flex flex-wrap items-center gap-3" style="--stagger: 5">
+          <a
+            href="#contact"
+            class="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-ink"
+          >
+            <Icon name="mail" class="h-4 w-4" />
+            Get in touch
+          </a>
+          <a
+            href={`${base}cv.pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-accent/50 hover:text-accent dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-accent-soft/50 dark:hover:text-accent-soft"
+          >
+            <Icon name="file-text" class="h-4 w-4" />
+            View CV
+          </a>
+          <SocialLinks />
+        </div>
+      </div>
+
+      {portrait && (
+        <Image
+          src={portrait}
+          alt={`Portrait of ${site.name}`}
+          width={640}
+          height={640}
+          fit="cover"
+          position="top"
+          widths={[160, 288, 432, 576, 640]}
+          sizes="(min-width: 1024px) 288px, (min-width: 768px) 224px, 160px"
+          loading="eager"
+          class="fade-up h-40 w-40 shrink-0 rounded-2xl object-cover shadow-sm ring-1 ring-zinc-200 md:h-56 md:w-56 lg:h-72 lg:w-72 dark:ring-zinc-800"
+          style="--stagger: 2"
+        />
+      )}
+    </div>
+
+    <!-- Decorative mountain/wave strip (shared component). -->
+    <SceneStrip class="mt-12" />
+  </section>
+
+  <!-- News -->
+  {news.length > 0 && (
+    <section class="mb-16 max-w-3xl md:mb-20">
+      <HomeHeading title="News" />
+      <div class="card p-5 sm:p-6">
+        <ul class="space-y-3">
+          {news.map((n) => (
+            <li class="flex gap-4">
+              <span class="w-20 shrink-0 pt-0.5 font-mono text-xs text-zinc-400 dark:text-zinc-500">
+                [{n.date}]
+              </span>
+              <span class="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">{n.text}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- About -->
+  <section class="mb-16 max-w-3xl md:mb-20">
+    <HomeHeading title="About" />
+    <div class="space-y-4 text-zinc-700 dark:text-zinc-300">
+      {site.bio.map((p) => <p class="leading-relaxed">{p}</p>)}
+    </div>
+  </section>
+
+  <!-- Research interests -->
+  <section class="mb-16 max-w-3xl md:mb-20">
+    <HomeHeading title="Research interests" href={`${base}research`} linkLabel="More" />
+    <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {researchInterests.map((t) => (
+        <li class="card card-hover flex items-center gap-3 px-3.5 py-3">
+          <Icon name={t.icon} class="h-[18px] w-[18px] shrink-0 text-accent dark:text-accent-soft" />
+          <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">{t.label}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Background cards: current position, latest degree, test scores.
+       Full history lives on the Background page. -->
+  <section class="mb-16 max-w-3xl md:mb-20">
+    <HomeHeading title="Background" href={`${base}background`} linkLabel="Details" />
+    <ul class="grid gap-4 sm:grid-cols-2">
+      {experience.length > 0 && (
+        <li class="card card-hover p-5">
+          <div class="mb-2.5 flex items-center gap-2">
+            <Icon name="briefcase" class="h-4 w-4 text-accent dark:text-accent-soft" />
+            <span class="font-mono text-xs uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500">
+              Current position
+            </span>
+          </div>
+          <p class="font-display text-lg font-medium leading-snug">{experience[0].role}</p>
+          <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{experience[0].org}</p>
+          <p class="mt-2 font-mono text-xs text-zinc-400 dark:text-zinc-500">{experience[0].period}</p>
+        </li>
+      )}
+      {education.length > 0 && (
+        <li class="card card-hover p-5">
+          <div class="mb-2.5 flex items-center gap-2">
+            <Icon name="scholar" class="h-4 w-4 text-accent dark:text-accent-soft" />
+            <span class="font-mono text-xs uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500">
+              Education
+            </span>
+          </div>
+          <p class="font-display text-lg font-medium leading-snug">{education[0].degree}</p>
+          <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{education[0].school} · {education[0].summary}</p>
+          <p class="mt-2 font-mono text-xs text-zinc-400 dark:text-zinc-500">{education[0].period}</p>
+        </li>
+      )}
+      {testScores.map((t) => (
+        <li class="card card-hover p-5">
+          <div class="mb-2.5 flex items-center gap-2">
+            <Icon name="file-text" class="h-4 w-4 text-accent dark:text-accent-soft" />
+            <span class="font-mono text-xs uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500">
+              {t.name}
+            </span>
+          </div>
+          <p class="font-display text-2xl font-semibold text-accent dark:text-accent-soft">{t.score}</p>
+          <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t.detail}</p>
+          <p class="mt-2 font-mono text-xs text-zinc-400 dark:text-zinc-500">{t.date}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Selected work -->
+  {featured.length > 0 && (
+    <section class="mb-16 max-w-3xl md:mb-20">
+      <HomeHeading title="Selected work" href={`${base}publications`} linkLabel="All publications" />
+      <div>
+        {featured.map((p) => <PublicationCard {...p.data} />)}
+      </div>
+    </section>
+  )}
+
+  <!-- Skills -->
+  {skills.length > 0 && (
+    <section class="mb-16 max-w-3xl md:mb-20">
+      <HomeHeading title="Skills" />
+      <div class="space-y-4">
+        {skills.map((g) => (
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline">
+            <h3 class="w-44 shrink-0 font-mono text-xs uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500">
+              {g.group}
+            </h3>
+            <ul class="flex flex-wrap gap-1.5">
+              {g.items.map((s) => (
+                <li class="rounded bg-zinc-100 px-2 py-0.5 font-mono text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">{s}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Contact -->
+  <section id="contact" class="mx-auto max-w-xl scroll-mt-24 border-t border-zinc-200/70 pt-16 text-center dark:border-zinc-800">
+    <p class="mb-3 font-mono text-sm text-accent dark:text-accent-soft">what's next?</p>
+    <h2 class="font-display text-3xl font-semibold tracking-tight md:text-4xl">Get in touch</h2>
+    <p class="mt-4 leading-relaxed text-zinc-600 dark:text-zinc-400">
+      Whether it's a research collaboration, a PhD opportunity, or just a question about my
+      work — my inbox is always open. I'll do my best to get back to you.
+    </p>
+    <a
+      href={`mailto:${site.links.email}`}
+      class="mt-8 inline-flex items-center gap-2.5 rounded-lg border border-accent px-5 py-3 font-mono text-sm text-accent transition-colors hover:bg-accent/5 dark:border-accent-soft dark:text-accent-soft dark:hover:bg-accent-soft/10"
+    >
+      <Icon name="mail" class="h-4 w-4" />
+      {site.links.email}
+    </a>
+    <div class="mt-8 flex justify-center">
+      <SocialLinks />
+    </div>
+  </section>
+</Base>

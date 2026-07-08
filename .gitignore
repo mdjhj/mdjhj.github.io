@@ -1,0 +1,25 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# environment
+.env
+.env.production
+
+# macOS / editor
+.DS_Store
+.vscode/
+
+# personal, local-only files — never pushed
+*.local.md
+
+# local tooling (Claude Code session config)
+.claude/

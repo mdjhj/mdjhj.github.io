@@ -1,0 +1,94 @@
+---
+// EXPERIMENTAL decorative strip: a plain CSS mountain range above gentle,
+// drifting sea waves. Shared by both home layouts — pass `class` to position
+// it (e.g. "mt-12"). Delete the usage (not this file) to remove it per page.
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+<div
+  class:list={["relative h-[4.5rem] overflow-hidden text-accent dark:text-accent-soft", className]}
+  aria-hidden="true"
+>
+  {/* STAR VARIANT (kept for easy switch-back — paste in place of the
+      mountain block below):
+
+  <svg
+    class="absolute inset-x-0 top-0 h-8 w-full"
+    viewBox="0 0 720 32"
+    preserveAspectRatio="xMidYMid meet"
+    fill="currentColor"
+  >
+    <g class="animate-breathe">
+      <g transform="translate(360, 16)">
+        <rect x="-11" y="-11" width="22" height="22" />
+        <rect x="-11" y="-11" width="22" height="22" transform="rotate(45)" />
+      </g>
+    </g>
+    <g class="animate-breathe" style="animation-delay: -2.7s">
+      <g transform="translate(285, 16)">
+        <rect x="-8" y="-8" width="16" height="16" />
+        <rect x="-8" y="-8" width="16" height="16" transform="rotate(45)" />
+      </g>
+      <g transform="translate(435, 16)">
+        <rect x="-8" y="-8" width="16" height="16" />
+        <rect x="-8" y="-8" width="16" height="16" transform="rotate(45)" />
+      </g>
+      <rect x="-2.5" y="-2.5" width="5" height="5" transform="translate(322.5, 16) rotate(45)" />
+      <rect x="-2.5" y="-2.5" width="5" height="5" transform="translate(397.5, 16) rotate(45)" />
+    </g>
+    <g class="animate-breathe" style="animation-delay: -5.4s">
+      <g transform="translate(215, 16)">
+        <rect x="-6" y="-6" width="12" height="12" />
+        <rect x="-6" y="-6" width="12" height="12" transform="rotate(45)" />
+      </g>
+      <g transform="translate(505, 16)">
+        <rect x="-6" y="-6" width="12" height="12" />
+        <rect x="-6" y="-6" width="12" height="12" transform="rotate(45)" />
+      </g>
+      <rect x="-2.5" y="-2.5" width="5" height="5" transform="translate(250, 16) rotate(45)" />
+      <rect x="-2.5" y="-2.5" width="5" height="5" transform="translate(470, 16) rotate(45)" />
+      <rect x="-2" y="-2" width="4" height="4" transform="translate(180, 16) rotate(45)" />
+      <rect x="-2" y="-2" width="4" height="4" transform="translate(540, 16) rotate(45)" />
+    </g>
+  </svg>
+  */}
+
+  <!-- MOUNTAIN VARIANT: plain CSS clip-path triangles, centered range
+       whose bases tuck behind the waves (drawn after, so they overlap). -->
+  <div class="absolute inset-x-0 bottom-2 flex h-14 items-end justify-center">
+    <div class="relative h-full w-80 text-accent dark:text-accent-soft">
+      <div class="absolute bottom-0 left-2 h-[62%] w-32 bg-current opacity-[0.14] [clip-path:polygon(55%_0,100%_100%,0_100%)]"></div>
+      <div class="absolute bottom-0 left-1/2 h-full w-44 -translate-x-1/2 bg-current opacity-[0.26] [clip-path:polygon(48%_0,100%_100%,0_100%)]"></div>
+      <div class="absolute bottom-0 right-2 h-[74%] w-36 bg-current opacity-[0.18] [clip-path:polygon(42%_0,100%_100%,0_100%)]"></div>
+    </div>
+  </div>
+  <svg
+    class="animate-wave absolute bottom-0 left-0 h-10 w-[200%] opacity-[0.07]"
+    style="--wave-duration: 34s"
+    viewBox="0 0 2880 60"
+    preserveAspectRatio="none"
+    fill="currentColor"
+  >
+    <path d="M0,34 C240,54 480,14 720,34 C960,54 1200,14 1440,34 C1680,54 1920,14 2160,34 C2400,54 2640,14 2880,34 L2880,60 L0,60 Z" />
+  </svg>
+  <svg
+    class="animate-wave absolute bottom-0 left-0 h-10 w-[200%] opacity-[0.11]"
+    style="--wave-duration: 24s; animation-delay: -8s"
+    viewBox="0 0 2880 60"
+    preserveAspectRatio="none"
+    fill="currentColor"
+  >
+    <path d="M0,40 C240,56 480,24 720,40 C960,56 1200,24 1440,40 C1680,56 1920,24 2160,40 C2400,56 2640,24 2880,40 L2880,60 L0,60 Z" />
+  </svg>
+  <svg
+    class="animate-wave absolute bottom-0 left-0 h-10 w-[200%] opacity-[0.16]"
+    style="--wave-duration: 17s; animation-delay: -4s"
+    viewBox="0 0 2880 60"
+    preserveAspectRatio="none"
+    fill="currentColor"
+  >
+    <path d="M0,46 C240,58 480,34 720,46 C960,58 1200,34 1440,46 C1680,58 1920,34 2160,46 C2400,58 2640,34 2880,46 L2880,60 L0,60 Z" />
+  </svg>
+</div>
