@@ -41,6 +41,15 @@ const banners = import.meta.glob<{ default: ImageMetadata }>(
 );
 const banner = Object.values(banners)[0]?.default ?? portrait;
 
+// ── PHOTO FRAMING KNOBS ─────────────────────────────────────────────────
+// The fixed-size boxes crop the photos with object-fit: cover; these values
+// pick WHICH part stays visible ("x% y%": 0% = left/top edge, 100% =
+// right/bottom edge, 50% = centered). Tune these after swapping a photo —
+// e.g. if the right side gets cut and your subject sits left of center,
+// lower the x value.
+const desktopPortraitPosition = "100% 32%";
+const mobileBannerPosition = "50% 45%";
+
 const featured = (await getCollection("publications"))
   .filter((p) => p.data.featured)
   .sort((a, b) => b.data.year - a.data.year)
@@ -88,7 +97,8 @@ const labelIcon = "h-4 w-4 text-accent dark:text-accent-soft";
           widths={[640, 960, 1280, 1600]}
           sizes="100vw"
           loading="eager"
-          class="fade-in-scale h-72 w-full object-cover object-[50%_45%] sm:h-80 lg:hidden"
+          class="fade-in-scale h-72 w-full object-cover sm:h-80 lg:hidden"
+          style={`object-position: ${mobileBannerPosition}`}
         />
         <!-- Desktop: framed portrait -->
         <Image
@@ -97,7 +107,8 @@ const labelIcon = "h-4 w-4 text-accent dark:text-accent-soft";
           widths={[480, 768, 1080]}
           sizes="30vw"
           loading="eager"
-          class="fade-in-scale hidden w-full object-cover object-[50%_32%] lg:block lg:h-[23rem] lg:rounded-2xl lg:shadow-sm lg:ring-1 lg:ring-zinc-200 xl:h-[25rem] dark:lg:ring-zinc-800"
+          class="fade-in-scale hidden w-full object-cover lg:block lg:h-[23rem] lg:rounded-2xl lg:shadow-sm lg:ring-1 lg:ring-zinc-200 xl:h-[25rem] dark:lg:ring-zinc-800"
+          style={`object-position: ${desktopPortraitPosition}`}
         />
         <div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-paper/70 to-transparent lg:hidden dark:from-ink/70" aria-hidden="true"></div>
 
@@ -257,7 +268,7 @@ const labelIcon = "h-4 w-4 text-accent dark:text-accent-soft";
         ))}
 
         <!-- Quote / Life teaser -->
-        <div class="card p-5">
+        <!-- <div class="card p-5">
           <div class={label}>
             <Icon name="eye" class={labelIcon} />
             <span class={labelText}>Beyond academia</span>
@@ -269,7 +280,7 @@ const labelIcon = "h-4 w-4 text-accent dark:text-accent-soft";
             </blockquote>
           )}
           <a href={`${base}life`} class="link-underline mt-3 inline-block text-sm">More →</a>
-        </div>
+        </div> -->
 
         <!-- Selected work -->
         <div id="work" class="card scroll-mt-8 p-5 sm:col-span-2 xl:col-span-3">

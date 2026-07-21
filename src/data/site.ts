@@ -33,7 +33,7 @@ export const site = {
   bio: [
     "I am a Computer Science lecturer at East Delta University in Bangladesh and a prospective PhD student.",
     "My research spans NLP, large language models, and deep learning for computer vision and medical imaging, with a particular focus on reliability, data efficiency, and practical applicability, especially in low-resource and class-imbalanced settings.",
-    "Recently, I have worked on LLM-driven tasks for low-resource languages, and I am developing ideas at the intersection of retrieval-augmented generation and reinforcement learning for trustworthy, evidence-grounded systems.",
+    //"Recently, I have worked on LLM-driven tasks for low-resource languages, and I am developing ideas at the intersection of retrieval-augmented generation and reinforcement learning for trustworthy, evidence-grounded systems.",
     "I am increasingly drawn to scalability and efficiency in AI, including how parallel and high-performance computing can support large-scale models.",
   ],
 
@@ -106,7 +106,7 @@ export const education = [
     // Compact one-liner used on the home page card.
     summary: "CGPA 3.74 / 4.00",
     details: [
-      "Thesis: Automated Tag Recommendation System for Question-Answering Sites — supervised by Dr. Muhammad Ibrahim Khan.",
+      "Thesis: Automated Tag Recommendation System for Question-Answering Sites - supervised by Dr. Muhammad Ibrahim Khan.",
       "CGPA 3.74 / 4.00.",
     ],
   },
@@ -145,8 +145,9 @@ export const testScores = [
 ];
 
 // ---------------------------------------------------------------------------
-// Experience (newest first). Only the FIRST entry (current role) is shown on
-// the home page; full history lives in the Background page's Teaching tab.
+// Experience (newest first) — THE single array for work history.
+//   • Home page card: role / org / period of the FIRST entry.
+//   • Background page → Teaching tab: every entry, with courses + highlights.
 // ---------------------------------------------------------------------------
 export const experience = [
   {
@@ -154,10 +155,10 @@ export const experience = [
     role: "Lecturer",
     period: "May 2023 - Present",
     location: "Chattogram, Bangladesh",
-    points: [
-      "Teaching Data Structures, Algorithms, Compiler Design, and Operating Systems.",
-      "Supervising undergraduate thesis groups in deep learning for disease diagnosis, multimodal learning, and object detection.",
-      "Mentoring student teams in data structures, compiler design, and operating systems projects.",
+    courses: ["Data Structures", "Algorithms", "Compiler Design", "Operating Systems"],
+    highlights: [
+      "Supervising undergraduate thesis groups in deep learning for disease diagnosis, multimodal learning, object detection, and natural language processing.",
+      "Mentoring student teams in data structures, compiler design, operating systems, and web development projects.",
     ],
   },
   {
@@ -165,10 +166,8 @@ export const experience = [
     role: "Lecturer",
     period: "Sep 2022 - May 2023",
     location: "Chattogram, Bangladesh",
-    points: [
-      "Taught Pattern Recognition, Theory of Computing, Computer Graphics, and Discrete Mathematics.",
-      "Mentored student teams on web development and image-processing projects.",
-    ],
+    courses: ["Pattern Recognition", "Theory of Computing", "Computer Graphics", "Discrete Mathematics"],
+    highlights: ["Mentored student teams on web development and image-processing projects."],
   },
 ];
 
@@ -180,29 +179,6 @@ export const skills = [
   { group: "ML & Data Science", items: ["PyTorch", "TensorFlow", "scikit-learn", "NumPy", "Pandas", "Matplotlib"] },
   { group: "Web", items: ["React.js", "Vue.js", "Node.js", "HTML5", "CSS3", "Bootstrap 5"] },
   { group: "Databases & Tools", items: ["MongoDB", "MySQL", "Git", "GitHub"] },
-];
-
-// ---------------------------------------------------------------------------
-// Teaching — grouped by institution, used on the Background page's Teaching tab.
-// ---------------------------------------------------------------------------
-export const teaching = [
-  {
-    institution: "East Delta University",
-    role: "Lecturer",
-    period: "May 2023 - Present",
-    courses: ["Data Structures", "Algorithms", "Compiler Design", "Operating Systems"],
-    highlights: [
-      "Supervising undergraduate thesis groups in deep learning for disease diagnosis, multimodal learning, and object detection.",
-      "Mentoring student teams in data structures, compiler design, and operating systems projects.",
-    ],
-  },
-  {
-    institution: "Port City International University",
-    role: "Lecturer",
-    period: "Sep 2022 - May 2023",
-    courses: ["Pattern Recognition", "Theory of Computing", "Computer Graphics", "Discrete Mathematics"],
-    highlights: ["Mentored student teams on web development and image-processing projects."],
-  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -226,5 +202,8 @@ export const quotes = [
 ];
 
 export const galleryCaptions: Record<string, string> = {
-  // "sajek-2024.jpg": "Sajek Valley, 2024",
+  "01-Nepal_12.jpg": "Annapurna range, Nepal'2024",
+  "04-Sajek.jpg": "Clouds over Sajek Valley, Bangladesh'2017",
+  "03-Dhaka.jpg": "Dhaka cityscape, Bangladesh'2022",
+  "02-St. Martin.jpg":" St. Martin's Island, Bangladesh'2017",
 };

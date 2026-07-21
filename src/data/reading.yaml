@@ -22,7 +22,7 @@
   year: 2021
   url: https://arxiv.org/abs/2010.11929
   tags: [vision, transformers]
-  note: "ViT — directly relevant to my work on vision models; useful baseline framing."
+  note: "ViT - directly relevant to my work on vision models; useful baseline framing."
   dateRead: 2025-02-02
 
 - id: attention-is-all-you-need

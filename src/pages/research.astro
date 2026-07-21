@@ -2,36 +2,139 @@
 import Base from "../layouts/Shell.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import Icon from "../components/Icon.astro";
+import { Image } from "astro:assets";
 import { researchInterests } from "../data/site";
 
 // Edit these blocks to describe your research directions.
-const directions = [
+//
+// Figures — each direction can show one or several images:
+//   src/assets/research/<slug>.jpg                         (single)
+//   src/assets/research/<slug>-1.jpg, <slug>-2.jpg, ...    (multiple)
+// (.png / .webp also work). They render in filename order and replace the
+// dashed placeholder automatically. Multiple images spread into the free
+// space right of the text column.
+//
+// Don't want images for a direction? Add `figure: false` to it — no image,
+// no placeholder, text spans the full column.
+type Direction = { slug: string; title: string; body: string; figure?: boolean };
+const directions: Direction[] = [
   {
+    slug: "medical-imaging",
     title: "Medical Imaging with Deep Learning",
-    body: "Reliable, data-efficient models for diagnostic imaging. My published work covers COVID-19 detection from chest X-rays, diabetic retinopathy grading under severe class imbalance, dental disease classification and detection in OPG X-rays, and interpretable hybrid feature-fusion that holds up across heterogeneous public datasets — with a consistent focus on honest evaluation and generalization.",
+    body: "Reliable, data-efficient models for diagnostic imaging. My published work covers COVID-19 detection from chest X-rays, diabetic retinopathy grading under severe class imbalance, dental disease classification and detection in OPG X-rays, and interpretable hybrid feature-fusion that holds up across heterogeneous public datasets - with a consistent focus on honest evaluation and generalization.",
   },
   {
+    slug: "nlp-llm",
+    figure: false,
     title: "NLP & Large Language Models",
     body: "Applied NLP for low-resource languages such as Bangla, from automated tag recommendation for question-answering platforms to LLM-driven tasks. I am currently developing ideas at the intersection of retrieval-augmented generation and reinforcement learning for trustworthy, evidence-grounded systems.",
   },
   {
+    slug: "efficient-ai",
+    figure: false,
     title: "Efficient & Scalable AI",
-    body: "Efficient model design for real-world deployment, and how parallel and high-performance computing can support training and serving large-scale models — an emerging direction I aim to pursue during my PhD.",
+    body: "Efficient model design for real-world deployment, and how parallel and high-performance computing can support training and serving large-scale models.",
+    // (trimmed earlier: "- an emerging direction I aim to pursue during my PhD.")
+    // Example of opting out of images: figure: false,
   },
 ];
+
+// Set to false to hide ALL dashed "add an image" boxes at once (e.g. before
+// a deploy where figures are still missing). Per-direction opt-out is the
+// `figure: false` field above.
+const showFigurePlaceholders = true;
+
+const figures = import.meta.glob<{ default: ImageMetadata }>(
+  "../assets/research/*.{jpg,jpeg,png,webp}",
+  { eager: true },
+);
+
+// All images named `<slug>.<ext>` or `<slug>-<anything>.<ext>`, in filename
+// order (numeric-aware, so -2 sorts before -10).
+const figuresFor = (slug: string) =>
+  Object.entries(figures)
+    .filter(([path]) => {
+      if (!slug) return false;
+      const file = path.split("/").pop() ?? "";
+      return file.startsWith(`${slug}.`) || file.startsWith(`${slug}-`);
+    })
+    .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+    .map(([, mod]) => mod.default);
 ---
 <Base title="Research" description="Research directions in deep learning, computer vision, and medical imaging.">
   <SectionHeading eyebrow="What I work on" title="Research" />
 
-  <div class="max-w-3xl space-y-10">
-    {directions.map((d) => (
-      <section>
-        <h2 class="font-display text-xl font-medium">{d.title}</h2>
-        <p class="mt-3 leading-relaxed text-zinc-700 dark:text-zinc-300">{d.body}</p>
-      </section>
-    ))}
+  <div class="space-y-12">
+    {directions.map((d) => {
+      const wantsFigure = d.figure !== false;
+      const figs = wantsFigure ? figuresFor(d.slug) : [];
+      const showFigureArea = figs.length > 0 || (wantsFigure && showFigurePlaceholders);
+      return (
+        <section
+          class:list={[
+            showFigureArea &&
+              "md:grid md:grid-cols-[minmax(0,1fr),minmax(15rem,22rem)] md:items-start md:gap-8 xl:gap-10",
+          ]}
+        >
+          <div class="max-w-prose">
+            <h2 class="font-display text-xl font-medium">{d.title}</h2>
+            <p class="mt-3 leading-relaxed text-zinc-700 dark:text-zinc-300">{d.body}</p>
+          </div>
+          {figs.length > 0 ? (
+            <figure
+              class:list={[
+                "mt-4 grid gap-3 md:mt-1",
+                figs.length > 1 ? "grid-cols-2" : "grid-cols-1",
+              ]}
+            >
+              {figs.map((f, i) => (
+                <div class:list={["group relative", figs.length === 1 && "md:max-w-[16rem]"]}>
+                  <Image
+                    src={f}
+                    alt={`${d.title} — figure ${i + 1}`}
+                    width={640}
+                    height={480}
+                    fit="cover"
+                    widths={[320, 480, 640]}
+                    sizes={
+                      figs.length > 1
+                        ? "(min-width: 768px) 240px, 50vw"
+                        : "(min-width: 768px) 256px, 100vw"
+                    }
+                    class="aspect-[4/3] w-full rounded-xl object-cover shadow-sm ring-1 ring-zinc-200 transition-shadow group-hover:ring-accent/60 lg:cursor-zoom-in dark:ring-zinc-800 dark:group-hover:ring-accent-soft/60"
+                  />
+                  <!-- Hover preview (desktop): the full, uncropped image
+                       floating over the page — no zoom, natural aspect. -->
+                  <div class="pointer-events-none invisible absolute right-full top-1/2 z-30 mr-4 hidden w-[26rem] max-w-[45vw] -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:visible group-hover:opacity-100 lg:block">
+                    <Image
+                      src={f}
+                      alt=""
+                      widths={[480, 640, 832]}
+                      sizes="416px"
+                      class="w-full rounded-xl bg-paper shadow-2xl ring-1 ring-zinc-300 dark:bg-ink dark:ring-zinc-600"
+                    />
+                  </div>
+                </div>
+              ))}
+            </figure>
+          ) : showFigureArea ? (
+            <div
+              class="mt-4 flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-zinc-300 text-zinc-400 md:mt-1 md:max-w-[16rem] dark:border-zinc-700 dark:text-zinc-500"
+              aria-hidden="true"
+            >
+              <Icon name="image" class="h-6 w-6" />
+              <span class="px-3 text-center font-mono text-[11px] leading-relaxed">
+                src/assets/research/
+                <br />
+                {d.slug}-1.jpg, -2.jpg …
+              </span>
+            </div>
+          ) : null}
+        </section>
+      );
+    })}
 
-    <section>
+    <section class="max-w-prose">
       <h2 class="mb-3 font-display text-xl font-medium">Interests</h2>
       <ul class="flex flex-wrap gap-2">
         {researchInterests.map((t) => (

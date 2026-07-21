@@ -20,7 +20,12 @@ export default {
         mono: ["'JetBrains Mono Variable'", "ui-monospace", "monospace"],
       },
       maxWidth: {
+        // Outer page container (header + main).
         content: "72rem",
+        // Reading-column width for text sections SITE-WIDE (used as
+        // `max-w-prose` everywhere). Raise it (e.g. "56rem") for wider text,
+        // or set it to "none" to let text span the full container.
+        prose: "56rem",
       },
     },
   },

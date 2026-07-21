@@ -2,7 +2,7 @@
 import Base from "../layouts/Shell.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import Icon from "../components/Icon.astro";
-import { site, teaching, education, testScores } from "../data/site";
+import { site, experience, education, testScores } from "../data/site";
 
 const tabs = [
   { id: "teaching", label: "Teaching" },
@@ -13,7 +13,7 @@ const tabs = [
 <Base title="Background" description="Teaching experience, education, and test scores.">
   <SectionHeading eyebrow="Experience & credentials" title="Background" />
 
-  <div class="max-w-3xl">
+  <div class="max-w-prose">
     <!-- Tab bar -->
     <div
       role="tablist"
@@ -39,16 +39,16 @@ const tabs = [
     <!-- Teaching -->
     <section id="panel-teaching" role="tabpanel" aria-labelledby="tab-teaching">
       <p class="mb-10 leading-relaxed text-zinc-700 dark:text-zinc-300">
-        I have taught across the computer science curriculum at two universities — from
-        core theory to systems courses — and supervise undergraduate thesis and project
+        I have taught across the computer science curriculum at two universities, from
+        core theory to systems courses, and supervise undergraduate thesis and project
         teams, mostly in applied deep learning.
       </p>
 
       <div class="space-y-12">
-        {teaching.map((t) => (
+        {experience.map((t) => (
           <section>
             <div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-              <h2 class="font-display text-xl font-medium leading-snug">{t.institution}</h2>
+              <h2 class="font-display text-xl font-medium leading-snug">{t.org}</h2>
               <span class="shrink-0 font-mono text-xs text-zinc-400 dark:text-zinc-500">{t.period}</span>
             </div>
             <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{t.role}</p>

@@ -116,7 +116,7 @@ const featured = (await getCollection("publications"))
 
   <!-- News -->
   {news.length > 0 && (
-    <section class="mb-16 max-w-3xl md:mb-20">
+    <section class="mb-16 max-w-prose md:mb-20">
       <HomeHeading title="News" />
       <div class="card p-5 sm:p-6">
         <ul class="space-y-3">
@@ -134,7 +134,7 @@ const featured = (await getCollection("publications"))
   )}
 
   <!-- About -->
-  <section class="mb-16 max-w-3xl md:mb-20">
+  <section class="mb-16 max-w-prose md:mb-20">
     <HomeHeading title="About" />
     <div class="space-y-4 text-zinc-700 dark:text-zinc-300">
       {site.bio.map((p) => <p class="leading-relaxed">{p}</p>)}
@@ -142,7 +142,7 @@ const featured = (await getCollection("publications"))
   </section>
 
   <!-- Research interests -->
-  <section class="mb-16 max-w-3xl md:mb-20">
+  <section class="mb-16 max-w-prose md:mb-20">
     <HomeHeading title="Research interests" href={`${base}research`} linkLabel="More" />
     <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {researchInterests.map((t) => (
@@ -156,7 +156,7 @@ const featured = (await getCollection("publications"))
 
   <!-- Background cards: current position, latest degree, test scores.
        Full history lives on the Background page. -->
-  <section class="mb-16 max-w-3xl md:mb-20">
+  <section class="mb-16 max-w-prose md:mb-20">
     <HomeHeading title="Background" href={`${base}background`} linkLabel="Details" />
     <ul class="grid gap-4 sm:grid-cols-2">
       {experience.length > 0 && (
@@ -203,7 +203,7 @@ const featured = (await getCollection("publications"))
 
   <!-- Selected work -->
   {featured.length > 0 && (
-    <section class="mb-16 max-w-3xl md:mb-20">
+    <section class="mb-16 max-w-prose md:mb-20">
       <HomeHeading title="Selected work" href={`${base}publications`} linkLabel="All publications" />
       <div>
         {featured.map((p) => <PublicationCard {...p.data} />)}
@@ -213,7 +213,7 @@ const featured = (await getCollection("publications"))
 
   <!-- Skills -->
   {skills.length > 0 && (
-    <section class="mb-16 max-w-3xl md:mb-20">
+    <section class="mb-16 max-w-prose md:mb-20">
       <HomeHeading title="Skills" />
       <div class="space-y-4">
         {skills.map((g) => (

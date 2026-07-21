@@ -11,7 +11,7 @@ const pubs = (await getCollection("publications")).sort((a, b) => {
 ---
 <Base title="Publications" description="Papers and manuscripts.">
   <SectionHeading eyebrow="Papers & manuscripts" title="Publications" />
-  <div class="max-w-3xl">
+  <div class="max-w-prose">
     {pubs.length === 0 ? (
       <p class="text-zinc-500">No publications yet.</p>
     ) : (

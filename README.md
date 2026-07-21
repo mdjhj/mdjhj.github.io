@@ -20,8 +20,8 @@ Publications and reading-list entries live as Markdown files under `src/content/
 ## Editing content
 
 - **`src/data/site.ts`** -- identity, links, nav, news, research interests,
-  education, test scores, experience, projects, skills, teaching, and quotes.
-  Every section of the site is driven from here.
+  education, test scores, experience (jobs + courses + supervision), skills,
+  and quotes. Every section of the site is driven from here.
 - **`src/content/publications/`** -- one `.md` file per paper (frontmatter only).
 - **`src/data/reading.yaml`** -- the whole reading list in one file; adding a
   paper is copy-pasting an 8-line block (template at the top of the file). The
